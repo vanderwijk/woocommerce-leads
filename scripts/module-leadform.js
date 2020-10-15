@@ -1,6 +1,9 @@
-jQuery(document).ready(function($) {
+jQuery(function($) {
 
-	//$.validate();
+	$('#form-leads').parsley().on('form:success', function() {
+		$('input[type="submit"]').addClass('uploading');
+		$('input[type="submit"]').attr('disabled' , true);
+	});
 
 	$( '#close-leads' ).click(function() {
 		$( '#module-leads' ).slideUp();
@@ -22,7 +25,10 @@ jQuery(document).ready(function($) {
 
 });
 
+/*
 jQuery( "#form-leads" ).submit(function( event ) {
+
+	jQuery('#form-leads').parsley();
 
 	jQuery( '#submit-form' ).addClass( 'sending' );
 
@@ -43,7 +49,7 @@ jQuery( "#form-leads" ).submit(function( event ) {
 	event.preventDefault();
 });
 
-
+*/
 // 1. Update User
 function updateUser(formData) {
 

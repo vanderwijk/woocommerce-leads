@@ -26,12 +26,13 @@ define('WOOLEADS_DATABASE_VER', '1.0.0');
 include WOOLEADS_PLUGIN_DIR_PATH . 'functions/module-leadform.php';
 
 function wooleads_enqueues() {
+	wp_register_script( 'parsley', WOOLEADS_PLUGIN_DIR . 'node_modules/parsleyjs/dist/parsley.min.js', array('jquery'), '2.9.2', true );
 	wp_register_script ( 'module-leadform', WOOLEADS_PLUGIN_DIR . 'scripts/module-leadform.js', array( 'jquery' ), '1.2.0', true );
-
+	if (is_product()) {
+		wp_enqueue_script( 'parsley' );
 		wp_enqueue_script( 'form-validator' );
 		wp_enqueue_script( 'module-leadform' );
-		//wp_localize_script( 'module-leadform', 'WP_API_Settings', array( 'root' => esc_url_raw( rest_url() ), 'nonce' => wp_create_nonce( 'wp_rest' ), 'title' => ( current_time( 'H:i:s' ) ) ) );
-
-
+		wp_localize_script( 'module-leadform', 'WP_API_Settings', array( 'root' => esc_url_raw( rest_url() ), 'nonce' => wp_create_nonce( 'wp_rest' ), 'title' => ( current_time( 'H:i:s' ) ) ) );
+	}
 }
 add_action( 'wp_enqueue_scripts', 'wooleads_enqueues' );

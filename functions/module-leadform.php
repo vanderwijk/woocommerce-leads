@@ -29,10 +29,19 @@
 		font-size: 16px;
 		font-weight: 600;
 	}
+	.module-leads .sublabel {
+		font-weight: inherit;
+	}
 	.checkbox-full label {
 		display: inline;
 		font-size: inherit;
 		font-weight: inherit;
+	}
+	.module-leads .parsley-error {
+		border-color: #E01020;
+	}
+	.module-leads .parsley-errors-list {
+		color: #E01020;
 	}
 	.form_fields li {
 		margin-bottom: 20px;
@@ -79,7 +88,7 @@
 
 <?php } else { ?>
 
-	<form action="" method="post" id="form-leads" enctype="multipart/form-data">
+	<form method="post" id="form-leads" enctype="multipart/form-data">
 		<?php wp_nonce_field( 'request-sample','sample_requested' ); ?>
 		<input type="hidden" name="uid" value="<?php echo get_current_user_id(); ?>">
 		<input type="hidden" name="bid" value="<?php echo $brand->term_id; ?>">
@@ -132,21 +141,21 @@ Kind regards,
 				<label><?php _e( 'Name', 'wooleads' ); ?></label>
 				<span class="input-left">
 					<label for="firstname" class="sublabel"><?php _e( 'First', 'wooleads' ); ?> <span class="required">*</span></label>
-					<input type="text" name="firstname" id="firstname" value="<?php if(is_user_logged_in()) { echo $current_user->user_firstname; } ?>" data-validation="required" data-validation-error-msg="<?php _e( 'Please enter your first name.', 'wooleads' ); ?>" />
+					<input type="text" name="firstname" id="firstname" value="<?php if(is_user_logged_in()) { echo $current_user->user_firstname; } ?>" required data-parsley-error-message="<?php _e( 'Please enter your first name.', 'wooleads' ); ?>" />
 				</span>
 				<span class="input-right">
 					<label for="lastname" class="sublabel"><?php _e( 'Last', 'wooleads' ); ?> <span class="required">*</span></label>
-					<input type="text" name="lastname" id="lastname" value="<?php if(is_user_logged_in()) { echo $current_user->user_lastname; } ?>" data-validation="required" data-validation-error-msg="<?php _e( 'Please enter your last name.', 'wooleads' ); ?>" />
+					<input type="text" name="lastname" id="lastname" value="<?php if(is_user_logged_in()) { echo $current_user->user_lastname; } ?>" required data-parsley-error-message="<?php _e( 'Please enter your last name.', 'wooleads' ); ?>" />
 				</span>
 			</li>
 			<li class="two-columns">
 				<span class="input-left">
 					<label for="email"><?php _e( 'Email', 'wooleads' ); ?> <span class="required">*</span></label>
-					<input type="email" name="email" id="email" value="<?php if(is_user_logged_in()) { echo $current_user->user_email; } ?>" required data-validation="email" data-validation-error-msg="<?php _e( 'Please enter a valid e-mail address.', 'wooleads' ); ?>" />
+					<input type="email" name="email" id="email" value="<?php if(is_user_logged_in()) { echo $current_user->user_email; } ?>" required data-validation="email" data-parsley-error-message="<?php _e( 'Please enter a valid e-mail address.', 'wooleads' ); ?>" />
 				</span>
 				<span class="input-right">
 					<label for="profession"><?php _e( 'Profession', 'wooleads' ); ?> <span class="required">*</span></label>
-					<select name="profession" id="profession" data-validation="required" data-validation-error-msg="<?php _e( 'Please select your profession.', 'wooleads' ); ?>">
+					<select name="profession" id="profession" required data-parsley-error-message="<?php _e( 'Please select your profession.', 'wooleads' ); ?>">
 						<option value="">Make selection</option>
 						<option value="Architect" <?php selected( $current_user->profession, 'Architect' ); ?>>Architect</option>
 						<option value="Designer" <?php selected( $current_user->profession, 'Designer' ); ?>>Designer</option>
@@ -189,7 +198,7 @@ Kind regards,
 			</li>
 			<li>
 				<label for="country"><?php _e( 'Country', 'wooleads' ); ?> <span class="required">*</span></label>
-				<select name="country" id="country" data-validation="required" required data-validation-error-msg="<?php _e( 'Please select your country.', 'wooleads' ); ?>">
+				<select name="country" id="country" required required data-parsley-error-message="<?php _e( 'Please select your country.', 'wooleads' ); ?>">
 				<?php
 					include WOOLEADS_PLUGIN_DIR_PATH . 'includes/countries.php';
 					foreach( $countries as $id => $country ) {
