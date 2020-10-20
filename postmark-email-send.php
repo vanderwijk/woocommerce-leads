@@ -8,7 +8,7 @@ use Postmark\Models\PostmarkException;
 try {
 
 	// Create Client
-	$client = new PostmarkClient("a5ae0ec5-5ba8-4556-ab21-e89c7d32ecd9");
+	$client = new PostmarkClient( 'd8fb9bd9-b6d2-4d28-b50c-6e1bf24b08d7' );
 
 	// Make a request to send with a specific template
 	$sendResult = $client->sendEmailWithTemplate(
@@ -19,7 +19,7 @@ try {
 			"email" => $_POST['email'],
 			"firstname" => $_POST['firstname'],
 			"lastname" => $_POST['lastname'],
-			"referrer" => $_POST['_wp_http_referer'],
+			//"referrer" => $_POST['_wp_http_referer'],
 			"message" => $_POST['message'],
 			"profession" => $_POST['profession'],
 			"telephone" => $_POST['telephone'],
@@ -28,7 +28,7 @@ try {
 			"city" => $_POST['city'],
 			"postcode" => $_POST['postcode'],
 			"country" => $_POST['country'],
-			"sample_requested" => $_POST['sample_requested'],
+			//"sample_requested" => $_POST['sample_requested'],
 			"material_name" => $_POST['material_name'],
 			"material_url" => $_POST['material_url'],
 			"brand_name" => html_entity_decode($_POST['brand_name']),
@@ -43,7 +43,7 @@ try {
 		);
 	
 	// Return results for AJAX processing
-	//print_r( $sendResult );
+	print_r( $sendResult );
 	
 	// Return the messageID
 	echo $sendResult->messageid;

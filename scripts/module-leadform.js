@@ -1,15 +1,15 @@
 jQuery(function($) {
-
+/*
 	$('#form-leads').parsley().on('form:success', function() {
 		$('input[type="submit"]').addClass('uploading');
 		$('input[type="submit"]').attr('disabled' , true);
-	});
+	});*/
 
-	$( '#close-leads' ).click(function() {
+	$( '#close-leads' ).on('click', function() {
 		$( '#module-leads' ).slideUp();
 	});
 	
-	$( '#request-information' ).click(function() {
+	$( '#request-information' ).on('click', function() {
 		$( '#module-leads' ).slideDown();
 		/*$( 'html, body' ).animate({
 			 scrollTop: $( '#module-leads' ).offset().top - 245
@@ -17,7 +17,13 @@ jQuery(function($) {
 		return false;
 	});
 
-	$( '#continue-form' ).click(function(){
+	$( '#back-form' ).on('click', function() {
+		$( '#section-2' ).slideUp(function() {
+			$( '#section-1' ).slideDown();
+		});
+	});
+
+	$( '#continue-form' ).on('click', function() {
 		$( '#section-1' ).slideUp(function() {
 			$( '#section-2' ).slideDown();
 		});
@@ -25,8 +31,7 @@ jQuery(function($) {
 
 });
 
-/*
-jQuery( "#form-leads" ).submit(function( event ) {
+jQuery( "#form-leads" ).on('submit', function( event ) {
 
 	jQuery('#form-leads').parsley();
 
@@ -44,12 +49,11 @@ jQuery( "#form-leads" ).submit(function( event ) {
 	}).get().join( ", " );
 
 	updateUser(formData); // Naar stap 1. Update User
-	getLeadRoute(formData) // Naar stap 2. Get Lead Route
+	sendLead(formData) // Naar stap 2. Get Lead Route
 
 	event.preventDefault();
 });
 
-*/
 // 1. Update User
 function updateUser(formData) {
 
@@ -62,16 +66,16 @@ function updateUser(formData) {
 			console.log('Updating user.');
 		},
 		data: {
-			first_name: formData['firstname'],
-			last_name: formData['lastname'],
+			billing_first_name: formData['firstname'],
+			billing_last_name: formData['lastname'],
 			//email: formData['email'] -> is het handig als dit hier wordt bijgewerkt?
 			profession: formData['profession'],
-			telephone: formData['telephone'],
-			company: formData['company'],
-			address_street: formData['address_street'],
-			city: formData['city'],
-			postcode: formData['postcode'],
-			country: formData['country']
+			billing_phone: formData['telephone'],
+			billing_company: formData['company'],
+			billing_address_1: formData['address_street'],
+			billing_city: formData['city'],
+			billing_postcode: formData['postcode'],
+			billing_country: formData['country']
 		}
 	})
 	.done(function(data, textStatus, jqXHR) {
@@ -135,8 +139,8 @@ function sendLead(formData) {
 		url: '/wp-content/plugins/woocommerce-leads/postmark-email-send.php',
 		type: 'POST',
 		data: {
-			email_to: routing_email,
-			template: 7165521,
+			email_to: 'johan@vanderwijk.nl',
+			template: 20716081,
 			firstname: formData['firstname'],
 			lastname: formData['lastname'],
 			email: formData['email'],
@@ -149,11 +153,11 @@ function sendLead(formData) {
 			country: formData['country'],
 			message: formData['message'],
 			request: request,
-			routing_email: routing_email,
-			routing_name: routing_name,
-			material_name: material_name,
-			material_url: material_url,
-			brand_name: brand_name
+			routing_email: 'johan@vanderwijk.nl',
+			routing_name: 'routing_name',
+			material_name: 'material_name',
+			material_url: 'material_url',
+			brand_name: 'brand_name'
 		},
 		beforeSend : function(data) {
 			console.log('Sending lead.');
@@ -161,10 +165,10 @@ function sendLead(formData) {
 		success: function(data, textStatus, jqXHR) {
 			console.log('Lead sent.');
 
-			//console.log(data);
-			//console.log(textStatus);
-			//console.log(jqXHR);
-			sendConfirmation(formData,routing_email,routing_name,brand_name,material_name,material_url); // Naar stap 4. Send confirmation
+			console.log(data);
+			console.log(textStatus);
+			console.log(jqXHR);
+			//sendConfirmation(formData,routing_email,routing_name,brand_name,material_name,material_url); // Naar stap 4. Send confirmation
 		},
 		fail: function(jqXHR, textStatus, errorThrown) {
 			// Show error on spam
