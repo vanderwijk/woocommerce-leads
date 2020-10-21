@@ -126,13 +126,13 @@ function slug_update_user_meta( $value, $object, $field_name ) {
 }
 
 // API endpoint om gebruiker te zoeken met email adres
-function md_users_by_email_route(){
-	register_rest_route( 'md/v2', '/users/(?P<email>.+)', array(
+function wooleads_users_by_email_route(){
+	register_rest_route( 'wooleads/v2', '/users/(?P<email>.+)', array(
 		'methods' => 'GET',
 		'callback' => 'slug_get_user_id',
 	));
 }
-add_action( 'rest_api_init', 'md_users_by_email_route');
+add_action( 'rest_api_init', 'wooleads_users_by_email_route');
 
 function slug_get_user_id( $data ) {
 	$user = get_user_by( 'email', $data['email'] );

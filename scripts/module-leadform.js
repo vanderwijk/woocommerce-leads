@@ -11,10 +11,6 @@ jQuery(function($) {
 	
 	$( '#request-information' ).on('click', function() {
 		$( '#module-leads' ).slideDown();
-		/*$( 'html, body' ).animate({
-			 scrollTop: $( '#module-leads' ).offset().top - 245
-		}, 1000);*/
-		return false;
 	});
 
 	$( '#back-form' ).on('click', function() {
@@ -33,9 +29,9 @@ jQuery(function($) {
 
 jQuery( "#form-leads" ).on('submit', function( event ) {
 
-	jQuery('#form-leads').parsley();
+	jQuery('#form-leads').parsley(); // TODO: ABORT ON NON VALIDATE
 
-	jQuery( '#submit-form' ).addClass( 'sending' );
+	jQuery( '#submit-form' ).addClass( 'sending' ); // TODO: BUTTON SPINNER
 
 	formData = jQuery( '#form-leads' ).serializeArray();
 
@@ -44,12 +40,14 @@ jQuery( "#form-leads" ).on('submit', function( event ) {
 		formData[field.name] = field.value;
 	});
 
-	request = jQuery('input[name="requests"]:checked').map( function() {
-		return this.value;
-	}).get().join( ", " );
+	// Maak array van request checkboxes
+	request = [];
+	jQuery('input[name="requests"]:checked').map( function() {
+		request.push(this.value);
+	});
 
 	updateUser(formData); // Naar stap 1. Update User
-	sendLead(formData) // Naar stap 2. Get Lead Route
+	getLeadRoute(formData, request) // Naar stap 2. Get Lead Route
 
 	event.preventDefault();
 });
@@ -92,17 +90,16 @@ function updateUser(formData) {
 }
 
 // 2. Get Lead Route
-function getLeadRoute(formData) {
+function getLeadRoute(formData, request) {
 
 	// Haal leadroute op met brand ID en country
 	jQuery.ajax({
-		url: WP_API_Settings.root + 'md/v2/leadroute/' + formData['bid'],
+		url: WP_API_Settings.root + 'wooleads/v2/leadroute/' + formData['bid'],
 		method: 'GET',
 		dataType: 'json',
 		accepts: 'application/json',
 		data: {
-			country: formData['country'],
-			mid: formData['mid']
+
 		},
 		beforeSend: function (xhr) {
 			xhr.setRequestHeader('X-WP-Nonce', WP_API_Settings.nonce);
@@ -112,14 +109,10 @@ function getLeadRoute(formData) {
 	.done(function(data, textStatus, jqXHR) {
 		console.log('Found leadroute.');
 
-		leadroute = jQuery.parseJSON(data);
+		leadroute = JSON.parse(data);
 		routing_email = leadroute.routing_email;
-		routing_name = leadroute.routing_name;
-		brand_name = leadroute.brand_name;
-		material_name = leadroute.material_name;
-		material_url = leadroute.material_url;
 
-		sendLead(formData,routing_email,routing_name,brand_name,material_name,material_url); // Naar stap 3. Send lead
+		sendLead(formData, request, routing_email); // Naar stap 3. Send lead
 
 		//console.log(textStatus);
 		//console.dir(data);
@@ -133,14 +126,14 @@ function getLeadRoute(formData) {
 }
 
 // 3. Send lead to brand
-function sendLead(formData) {
+function sendLead(formData, request, routing_email) {
 
 	jQuery.ajax({
 		url: '/wp-content/plugins/woocommerce-leads/postmark-email-send.php',
 		type: 'POST',
 		data: {
-			email_to: 'johan@vanderwijk.nl',
-			template: 20716081,
+			email_to: routing_email,
+			template: 'lead_brand',
 			firstname: formData['firstname'],
 			lastname: formData['lastname'],
 			email: formData['email'],
@@ -153,11 +146,9 @@ function sendLead(formData) {
 			country: formData['country'],
 			message: formData['message'],
 			request: request,
-			routing_email: 'johan@vanderwijk.nl',
-			routing_name: 'routing_name',
-			material_name: 'material_name',
-			material_url: 'material_url',
-			brand_name: 'brand_name'
+			material_name: formData['pn'],
+			material_url: formData['purl'],
+			brand_name: formData['bn']
 		},
 		beforeSend : function(data) {
 			console.log('Sending lead.');
@@ -165,10 +156,10 @@ function sendLead(formData) {
 		success: function(data, textStatus, jqXHR) {
 			console.log('Lead sent.');
 
-			console.log(data);
-			console.log(textStatus);
-			console.log(jqXHR);
-			//sendConfirmation(formData,routing_email,routing_name,brand_name,material_name,material_url); // Naar stap 4. Send confirmation
+			//console.log(data);
+			//console.log(textStatus);
+			//console.log(jqXHR);
+			sendConfirmation(formData, request); // Naar stap 4. Send confirmation
 		},
 		fail: function(jqXHR, textStatus, errorThrown) {
 			// Show error on spam
@@ -179,14 +170,14 @@ function sendLead(formData) {
 }
 
 // 3. Send confirmation to user
-function sendConfirmation(formData) {
+function sendConfirmation(formData, request) {
 
 	jQuery.ajax({
 		url: '/wp-content/plugins/woocommerce-leads/postmark-email-send.php',
 		type: 'POST',
 		data: {
 			email_to: formData['email'],
-			template: 6929484,
+			template: 'lead_customer',
 			firstname: formData['firstname'],
 			lastname: formData['lastname'],
 			email: formData['email'],
@@ -199,21 +190,14 @@ function sendConfirmation(formData) {
 			country: formData['country'],
 			message: formData['message'],
 			request: request,
-			routing_email: routing_email,
-			routing_name: routing_name,
-			material_name: material_name,
-			material_url: material_url,
-			brand_name: brand_name
+			material_name: formData['pn'],
+			material_url: formData['purl'],
+			brand_name: formData['bn']
 		},
 		beforeSend : function() {
 			console.log('Sending confirmation.');
 		},
 		success: function(data, textStatus, jqXHR) {
-			gtag('event', 'lead_material', {
-				'send_to': 'UA-44082856-1',
-				'event_category': 'lead',
-				'event_label': request
-			});
 			jQuery( 'html, body' ).animate({
 				scrollTop: jQuery( '#module-leads' ).offset().top - 15
 			}, 1000);

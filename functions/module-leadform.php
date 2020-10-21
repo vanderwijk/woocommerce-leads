@@ -105,7 +105,7 @@ global $current_user; ?>
 
 		<h6><?php echo __('Please', 'wooleads') . ' <a href="' . wp_login_url( get_permalink() ) . '" title="Login">' . __( 'sign in', 'wooleads') . '</a> ' . __( 'first or <a href="/my-account/?action=register">register for free</a> to contact', 'wooleads' ) . ' ' . $brand->name; ?>.</h6>
 
-	<?php } else if ( $brand->term_id === null || empty( get_term_meta( $brand->term_id, 'e_mail', true)) ) { // if no brand has been added to the product or no email address has been specified ?>
+	<?php } else if ( $brand->term_id === null || empty( get_term_meta( $brand->term_id, 'e-mail', true)) ) { // if no brand has been added to the product or no email address has been specified ?>
 
 		<h4><?php _e( 'Sorry!', 'wooleads' ); ?></h4>
 		<h5><?php _e( 'This service is not provided by the manufacturer.', 'wooleads' ); ?></h5>
@@ -113,10 +113,12 @@ global $current_user; ?>
 	<?php } else { // show the form ?>
 
 		<form method="post" id="form-leads" enctype="multipart/form-data">
-			<?php wp_nonce_field( 'request-sample', 'sample_requested' ); ?>
 			<input type="hidden" name="uid" value="<?php echo get_current_user_id(); ?>">
 			<input type="hidden" name="bid" value="<?php echo $brand->term_id; ?>">
+			<input type="hidden" name="bn" value="<?php echo $brand->name; ?>">
 			<input type="hidden" name="pid" value="<?php echo $product_id; ?>">
+			<input type="hidden" name="pn" value="<?php echo get_the_title($product_id); ?>">
+			<input type="hidden" name="purl" value="<?php echo get_the_permalink($product_id); ?>">
 			<ul class="form_fields" id="section-1">
 				<li>
 					<span class="checkbox-full">

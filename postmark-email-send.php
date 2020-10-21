@@ -1,5 +1,6 @@
 <?php
 
+require ($_SERVER['DOCUMENT_ROOT'] . '/wp-load.php'); // added to have access to the Postmark API key constant
 require __DIR__ . '/vendor/autoload.php';
 
 use Postmark\PostmarkClient;
@@ -8,7 +9,7 @@ use Postmark\Models\PostmarkException;
 try {
 
 	// Create Client
-	$client = new PostmarkClient( 'd8fb9bd9-b6d2-4d28-b50c-6e1bf24b08d7' );
+	$client = new PostmarkClient( POSTMARK_API_KEY );
 
 	// Make a request to send with a specific template
 	$sendResult = $client->sendEmailWithTemplate(
@@ -19,7 +20,6 @@ try {
 			"email" => $_POST['email'],
 			"firstname" => $_POST['firstname'],
 			"lastname" => $_POST['lastname'],
-			//"referrer" => $_POST['_wp_http_referer'],
 			"message" => $_POST['message'],
 			"profession" => $_POST['profession'],
 			"telephone" => $_POST['telephone'],
@@ -28,7 +28,6 @@ try {
 			"city" => $_POST['city'],
 			"postcode" => $_POST['postcode'],
 			"country" => $_POST['country'],
-			//"sample_requested" => $_POST['sample_requested'],
 			"material_name" => $_POST['material_name'],
 			"material_url" => $_POST['material_url'],
 			"brand_name" => html_entity_decode($_POST['brand_name']),
@@ -38,8 +37,13 @@ try {
 		NULL, // tag
 		true, // trackOpens
 		NULL, // replyTo
-		"info@substratebank.com", // cc
-		NULL // bcc
+		NULL, // cc TODO add info@substratebank.com
+		NULL, // bcc
+		NULL, // header array
+		NULL, // attachment array
+		"HtmlOnly", // trackLinks,
+		NULL, // Metadata array
+		"leads", // messageStream
 		);
 	
 	// Return results for AJAX processing
