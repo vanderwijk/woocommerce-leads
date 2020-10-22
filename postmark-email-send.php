@@ -47,7 +47,7 @@ try {
 		);
 	
 	// Return results for AJAX processing
-	print_r( $sendResult );
+	//print_r( $sendResult );
 	
 	// Return the messageID
 	echo $sendResult->messageid;

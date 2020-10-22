@@ -29,6 +29,7 @@ if (isset($wooleads_settings['wooleads_postmark_api_key'])) {
 	define('POSTMARK_API_KEY', $wooleads_settings['wooleads_postmark_api_key']);
 }
 
+include WOOLEADS_PLUGIN_DIR_PATH . 'functions/custom-post-type-lead.php';
 include WOOLEADS_PLUGIN_DIR_PATH . 'functions/rest-user-meta.php';
 include WOOLEADS_PLUGIN_DIR_PATH . 'functions/rest-lead-meta.php';
 include WOOLEADS_PLUGIN_DIR_PATH . 'functions/settings.php';

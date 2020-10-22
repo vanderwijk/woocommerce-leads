@@ -1,9 +1,4 @@
 jQuery(function($) {
-/*
-	$('#form-leads').parsley().on('form:success', function() {
-		$('input[type="submit"]').addClass('uploading');
-		$('input[type="submit"]').attr('disabled' , true);
-	});*/
 
 	$( '#close-leads' ).on('click', function() {
 		$( '#module-leads' ).slideUp();
@@ -29,33 +24,41 @@ jQuery(function($) {
 
 jQuery( "#form-leads" ).on('submit', function( event ) {
 
-	jQuery('#form-leads').parsley(); // TODO: ABORT ON NON VALIDATE
-
-	jQuery( '#submit-form' ).addClass( 'sending' ); // TODO: BUTTON SPINNER
-
-	formData = jQuery( '#form-leads' ).serializeArray();
-
-	// Haal velden op uit formData array
-	jQuery(formData).each(function(i, field){
-		formData[field.name] = field.value;
-	});
-
-	// Maak array van request checkboxes
-	request = [];
-	jQuery('input[name="requests"]:checked').map( function() {
-		request.push(this.value);
-	});
-
-	updateUser(formData); // Naar stap 1. Update User
-	getLeadRoute(formData, request) // Naar stap 2. Get Lead Route
-
 	event.preventDefault();
+
+	jQuery(this).parsley().validate();
+
+	if ( jQuery(this).parsley().validate() == false ) {
+		return; // don't submit when fields are invalid
+	} else {
+
+		jQuery('#form-leads input[type="submit"]').addClass('sending');
+		jQuery('#form-leads input[type="submit"]').attr('disabled' , true);
+
+		formData = jQuery( '#form-leads' ).serializeArray();
+
+		// get fields from formData array
+		jQuery(formData).each(function(i, field){
+			formData[field.name] = field.value;
+		});
+
+		// make an array from selected request checkboxes
+		request = [];
+		jQuery('input[name="requests"]:checked').map( function() {
+			request.push(this.value);
+		});
+
+		updateUser(formData); // go to step 1, update user
+		getLeadRoute(formData, request) // go to step 2, get lead route
+
+	}
+
 });
 
-// 1. Update User
+// 1. update user
 function updateUser(formData) {
 
-	// Werk profielgegevens bij
+	// use rest api to update the user profile
 	jQuery.ajax({
 		url: WP_API_Settings.root + 'wp/v2/users/' + formData['uid'],
 		method: 'POST',
@@ -66,7 +69,7 @@ function updateUser(formData) {
 		data: {
 			billing_first_name: formData['firstname'],
 			billing_last_name: formData['lastname'],
-			//email: formData['email'] -> is het handig als dit hier wordt bijgewerkt?
+			//email: formData['email'] -> not sure if updating this here causes issues
 			profession: formData['profession'],
 			billing_phone: formData['telephone'],
 			billing_company: formData['company'],
@@ -89,17 +92,16 @@ function updateUser(formData) {
 
 }
 
-// 2. Get Lead Route
+// 2. get lead route
 function getLeadRoute(formData, request) {
 
-	// Haal leadroute op met brand ID en country
+	// get lead route based on brand id, see rest-lead-meta.php
 	jQuery.ajax({
 		url: WP_API_Settings.root + 'wooleads/v2/leadroute/' + formData['bid'],
 		method: 'GET',
 		dataType: 'json',
 		accepts: 'application/json',
 		data: {
-
 		},
 		beforeSend: function (xhr) {
 			xhr.setRequestHeader('X-WP-Nonce', WP_API_Settings.nonce);
@@ -112,7 +114,7 @@ function getLeadRoute(formData, request) {
 		leadroute = JSON.parse(data);
 		routing_email = leadroute.routing_email;
 
-		sendLead(formData, request, routing_email); // Naar stap 3. Send lead
+		sendLead(formData, request, routing_email); // go to step 3, send lead
 
 		//console.log(textStatus);
 		//console.dir(data);
@@ -125,7 +127,7 @@ function getLeadRoute(formData, request) {
 
 }
 
-// 3. Send lead to brand
+// 3. send lead to brand
 function sendLead(formData, request, routing_email) {
 
 	jQuery.ajax({
@@ -159,17 +161,17 @@ function sendLead(formData, request, routing_email) {
 			//console.log(data);
 			//console.log(textStatus);
 			//console.log(jqXHR);
-			sendConfirmation(formData, request); // Naar stap 4. Send confirmation
+			sendConfirmation(formData, request); // go to step 4, send confirmation
 		},
 		fail: function(jqXHR, textStatus, errorThrown) {
-			// Show error on spam
+			// show error on spam
 			alert( 'Your request could not be sent, please try again later.' );
 		}
 	});
 
 }
 
-// 3. Send confirmation to user
+// 4. send confirmation to user
 function sendConfirmation(formData, request) {
 
 	jQuery.ajax({
@@ -207,10 +209,10 @@ function sendConfirmation(formData, request) {
 			//console.log(data);
 			//console.log(textStatus);
 			//console.log(jqXHR);
-			saveLead(formData,data); // Naar stap 5. Save lead
+			saveLead(formData,data); // go to step 5 save lead
 		},
 		fail: function(jqXHR, textStatus, errorThrown) {
-			// Show error on spam
+			// show error on spam
 			jQuery( 'html, body' ).animate({
 					scrollTop: jQuery( '#module-leads' ).offset().top - 15
 			}, 1000);
@@ -226,12 +228,12 @@ function sendConfirmation(formData, request) {
 
 }
 
-// 5. Save lead
+// 5. save lead
 function saveLead(formData,postMarkID) {
 
-	// Maak nieuwe lead aan
+	// save new lead
 	jQuery.ajax({
-		url: WP_API_Settings.root + 'wp/v2/lead',
+		url: WP_API_Settings.root + 'wp/v2/lead/',
 		method: 'POST',
 		beforeSend: function (xhr) {
 			xhr.setRequestHeader('X-WP-Nonce', WP_API_Settings.nonce);
@@ -239,7 +241,7 @@ function saveLead(formData,postMarkID) {
 		},
 		data: {
 			status: 'publish',
-			material: formData['mid'],
+			product: formData['pid'],
 			brand: formData['bid'],
 			user: formData['uid'],
 			email_id: postMarkID

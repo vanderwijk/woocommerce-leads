@@ -1,5 +1,7 @@
 <?php function wooleads_form() { 
-	
+
+global $current_user;
+
 global $product;
 $product_id = $product->get_id();
 $brands = get_the_terms( $product_id, 'pa_brand' );
@@ -13,9 +15,7 @@ if ( !empty( $brands ) ) {
 		"term_id" => null,
 		"name" => "the manufacturer",
 	];
-}
-
-global $current_user; ?>
+} ?>
 
 <style>
 	.module-leads-wrapper {
@@ -23,13 +23,6 @@ global $current_user; ?>
 		border: 1px solid #f0f0f0;
 		border-radius: 5px;
 		padding: 28px;
-	}
-	.module-leads-wrapper input[type=text],
-	.module-leads-wrapper input[type=email],
-	.module-leads-wrapper input[type=tel],
-	.module-leads-wrapper textarea,
-	.module-leads-wrapper select {
-		background-color: #fff;
 	}
 	.module-leads-wrapper h2 {
 		font-size: 30px;
@@ -41,11 +34,15 @@ global $current_user; ?>
 	.module-leads-wrapper .close-leads {
 		float: right;
 	}
-	.button-contact-brand p {
-		margin: 20px 0 0 0;
-	}
 	.module-leads {
 		display: none;
+	}
+	.module-leads input[type=text],
+	.module-leads input[type=email],
+	.module-leads input[type=tel],
+	.module-leads textarea,
+	.module-leads select {
+		background-color: #fff;
 	}
 	.module-leads label {
 		font-size: 16px;
@@ -54,7 +51,7 @@ global $current_user; ?>
 	.module-leads .sublabel {
 		font-weight: inherit;
 	}
-	.checkbox-full label {
+	.module-leads .checkbox-full label {
 		display: inline;
 		font-size: inherit;
 		font-weight: inherit;
@@ -65,19 +62,19 @@ global $current_user; ?>
 	.module-leads .parsley-errors-list {
 		color: #E01020;
 	}
-	.form_fields li {
+	.module-leads .form_fields li {
 		margin-bottom: 20px;
 	}
-	.two-columns {
+	.module-leads .two-columns {
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: space-between;
 		margin-bottom: 40px;
 	}
-	.two-columns label {
+	.module-leads .two-columns label {
 		width: 100%;
 	}
-	.input-left {
+	.module-leads .input-left {
 		width: 49%;
 	}
 	.input-right {
@@ -86,19 +83,23 @@ global $current_user; ?>
 	.module-leads #section-2 {
 		display: none;
 	}
-
-
+	.module-leads .sending {
+		background-image: url('/wp-content/plugins/woocommerce-leads/images/spinner.svg');
+		background-position: right;
+		background-position: calc(100% - 3px) center;
+		background-repeat: no-repeat;
+	}
 </style>
 
 <div class="module-leads-wrapper">
 
 	<div class="button-contact-brand">
-		<button id="request-information" class="call-to-action-button btn btn-color-alt btn-style-default btn-shape-semi-round btn-size-extra-large"><?php _e( 'Request Information', 'wooleads' ); ?></button>
-		<p>Get directly in touch with <?php echo $brand->name; ?></p>
+		<p><button id="request-information" class="call-to-action-button btn btn-color-alt btn-style-default btn-shape-semi-round btn-size-extra-large"><?php _e( 'Request Information', 'wooleads' ); ?></button></p>
+		<p><?php _e( 'Get directly in touch with', 'wooleads' ); ?> <?php echo $brand->name; ?></p>
 	</div>
 
 	<div class="module-leads" id="module-leads">
-		<button id="close-leads" class="btn btn-color-primary btn-style-round btn-shape-rectangle btn-size-default btn-icon-pos-right close-leads">Close <span class="wd-btn-icon"><i class="fas fa-times"></i></span></button>
+		<button id="close-leads" class="btn btn-color-primary btn-style-round btn-shape-rectangle btn-size-default btn-icon-pos-right close-leads"><?php _e( 'Close', 'wooleads' ); ?> <span class="wd-btn-icon"><i class="fas fa-times"></i></span></button>
 		<h2><?php _e( 'Request Information', 'wooleads' ); ?></h2>
 
 	<?php if ( !is_user_logged_in() ) { // if user is logged out ?>
@@ -113,7 +114,7 @@ global $current_user; ?>
 	<?php } else { // show the form ?>
 
 		<form method="post" id="form-leads" enctype="multipart/form-data">
-			<input type="hidden" name="uid" value="<?php echo get_current_user_id(); ?>">
+			<input type="hidden" name="uid" value="<?php echo $current_user->ID; ?>">
 			<input type="hidden" name="bid" value="<?php echo $brand->term_id; ?>">
 			<input type="hidden" name="bn" value="<?php echo $brand->name; ?>">
 			<input type="hidden" name="pid" value="<?php echo $product_id; ?>">
@@ -127,7 +128,7 @@ global $current_user; ?>
 				</li>
 				<li>
 					<span class="checkbox-full">
-						<input type="checkbox" name="requests" value="<?php _e( 'Where can I find your nearest distributor?', 'wooleads' ); ?>" id="distributor"><label for="distributor"><?php echo __( 'Where can I find your nearest distributor?', 'wooleads' ); ?></label> <?php if ( !empty( $current_user->country ) ) { echo '(' . $current_user->country . ')'; } ?>
+						<input type="checkbox" name="requests" value="<?php _e( 'Where can I find your nearest distributor?', 'wooleads' ); ?>" id="distributor"><label for="distributor"><?php echo __( 'Where can I find your nearest distributor?', 'wooleads' ); ?></label> <?php if ( !empty( $current_user->billing_country ) ) { echo '(' . $current_user->billing_country . ')'; } ?>
 					</span>
 				</li>
 				<li>
@@ -179,26 +180,26 @@ global $current_user; ?>
 						<label for="profession"><?php _e( 'Profession', 'wooleads' ); ?> <span class="required">*</span></label>
 						<select name="profession" id="profession" required data-parsley-error-message="<?php _e( 'Please select your profession.', 'wooleads' ); ?>">
 							<option value="">Make selection</option>
-							<option value="Agent" <?php selected( $current_user->profession, 'Agent' ); ?>>Agent</option>
-							<option value="Architect" <?php selected( $current_user->profession, 'Architect' ); ?>>Architect</option>
-							<option value="Brand-owner" <?php selected( $current_user->profession, 'Brand-owner' ); ?>>Brand-owner</option>
-							<option value="Buyer" <?php selected( $current_user->profession, 'Buyer' ); ?>>Buyer</option>
-							<option value="Business developer" <?php selected( $current_user->profession, 'Business developer' ); ?>>Business developer</option>
-							<option value="Contractor" <?php selected( $current_user->profession, 'Contractor' ); ?>>Contractor</option>
-							<option value="Consultant" <?php selected( $current_user->profession, 'Consultant' ); ?>>Consultant</option>
-							<option value="Designer" <?php selected( $current_user->profession, 'Designer' ); ?>>Designer</option>
-							<option value="Distributor" <?php selected( $current_user->profession, 'Distributor' ); ?>>Distributor</option>
-							<option value="Journalist" <?php selected( $current_user->profession, 'Journalist' ); ?>>Journalist</option>
-							<option value="Marketing specialist" <?php selected( $current_user->profession, 'Marketing specialist' ); ?>>Marketing specialist</option>
-							<option value="Manufacturer" <?php selected( $current_user->profession, 'Manufacturer' ); ?>>Manufacturer</option>
-							<option value="Packaging specialist" <?php selected( $current_user->profession, 'Packaging specialist' ); ?>>Packaging specialist</option>
-							<option value="Print operator" <?php selected( $current_user->profession, 'Print operator' ); ?>>Print operator</option>
-							<option value="Print specialist" <?php selected( $current_user->profession, 'Print specialist' ); ?>>Print specialist</option>
-							<option value="Product manager" <?php selected( $current_user->profession, 'Product manager' ); ?>>Product manager</option>
-							<option value="Sign maker" <?php selected( $current_user->profession, 'Sign maker' ); ?>>Sign maker</option>
-							<option value="Sustainability manager" <?php selected( $current_user->profession, 'Sustainability manager' ); ?>>Sustainability manager</option>
-							<option value="Student" <?php selected( $current_user->profession, 'Student' ); ?>>Student</option>
-							<option value="Other" <?php selected( $current_user->profession, 'Other' ); ?>>Other</option>
+							<option value="Agent" <?php selected( $current_user->profession, 'Agent' ); ?>><?php _e( 'Agent', 'wooleads' ); ?></option>
+							<option value="Architect" <?php selected( $current_user->profession, 'Architect' ); ?>><?php _e( 'Architect', 'wooleads' ); ?></option>
+							<option value="Brand-owner" <?php selected( $current_user->profession, 'Brand-owner' ); ?>><?php _e( 'Brand-owner', 'wooleads' ); ?></option>
+							<option value="Buyer" <?php selected( $current_user->profession, 'Buyer' ); ?>>Buyer<?php _e( '', 'wooleads' ); ?></option>
+							<option value="Business developer" <?php selected( $current_user->profession, 'Business developer' ); ?>><?php _e( 'Business developer', 'wooleads' ); ?></option>
+							<option value="Contractor" <?php selected( $current_user->profession, 'Contractor' ); ?>><?php _e( 'Contractor', 'wooleads' ); ?></option>
+							<option value="Consultant" <?php selected( $current_user->profession, 'Consultant' ); ?>><?php _e( 'Consultant', 'wooleads' ); ?></option>
+							<option value="Designer" <?php selected( $current_user->profession, 'Designer' ); ?>><?php _e( 'Designer', 'wooleads' ); ?></option>
+							<option value="Distributor" <?php selected( $current_user->profession, 'Distributor' ); ?>><?php _e( 'Distributor', 'wooleads' ); ?></option>
+							<option value="Journalist" <?php selected( $current_user->profession, 'Journalist' ); ?>><?php _e( 'Journalist', 'wooleads' ); ?></option>
+							<option value="Marketing specialist" <?php selected( $current_user->profession, 'Marketing specialist' ); ?>><?php _e( 'Marketing specialist', 'wooleads' ); ?></option>
+							<option value="Manufacturer" <?php selected( $current_user->profession, 'Manufacturer' ); ?>><?php _e( 'Manufacturer', 'wooleads' ); ?></option>
+							<option value="Packaging specialist" <?php selected( $current_user->profession, 'Packaging specialist' ); ?>><?php _e( 'Packaging specialist', 'wooleads' ); ?></option>
+							<option value="Print operator" <?php selected( $current_user->profession, 'Print operator' ); ?>><?php _e( 'Print operator', 'wooleads' ); ?></option>
+							<option value="Print specialist" <?php selected( $current_user->profession, 'Print specialist' ); ?>><?php _e( 'Print specialist', 'wooleads' ); ?></option>
+							<option value="Product manager" <?php selected( $current_user->profession, 'Product manager' ); ?>><?php _e( 'Product manager', 'wooleads' ); ?></option>
+							<option value="Sign maker" <?php selected( $current_user->profession, 'Sign maker' ); ?>><?php _e( 'Sign maker', 'wooleads' ); ?></option>
+							<option value="Sustainability manager" <?php selected( $current_user->profession, 'Sustainability manager' ); ?>><?php _e( 'Sustainability manager', 'wooleads' ); ?></option>
+							<option value="Student" <?php selected( $current_user->profession, 'Student' ); ?>><?php _e( 'Student', 'wooleads' ); ?></option>
+							<option value="Other" <?php selected( $current_user->profession, 'Other' ); ?>><?php _e( 'Other', 'wooleads' ); ?></option>
 						</select>
 					</span>
 				</li>

@@ -125,11 +125,22 @@ function slug_update_user_meta( $value, $object, $field_name ) {
 	return update_user_meta( $object->id, $field_name, $value );
 }
 
+function woolead_users_persmission_callback() {
+	// Restrict endpoint to only users who have the read capability.
+	if ( ! current_user_can( 'read' ) ) {
+		return new WP_Error( 'rest_forbidden', esc_html__( 'You can not view private data.', 'wooleads' ), array( 'status' => 401 ) );
+	}
+
+	// This is a black-listing approach. You could alternatively do this via white-listing, by returning false here and changing the permissions check.
+	return true;
+}
+
 // API endpoint om gebruiker te zoeken met email adres
 function wooleads_users_by_email_route(){
 	register_rest_route( 'wooleads/v2', '/users/(?P<email>.+)', array(
 		'methods' => 'GET',
 		'callback' => 'slug_get_user_id',
+		'permission_callback' => 'woolead_users_persmission_callback',
 	));
 }
 add_action( 'rest_api_init', 'wooleads_users_by_email_route');
