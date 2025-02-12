@@ -1,0 +1,79 @@
+Information request Brand
+
+Information request for {{material_name}} via Substrate Bank
+
+<h1>Dear {{brand_name}},</h1>
+<p>Congratulations! You have received a new lead via Substrate Bank.</p>
+<p>{{firstname}} {{lastname}} is interested in <a href="{{material_url}}">{{material_name}}</a>.</p>
+<p>Request:</p>
+<table class="attributes" width="100%" cellpadding="0" cellspacing="0">
+  <tr>
+    <td class="attributes_content">
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td class="attributes_item">
+            <p>
+              <strong>
+                {{#each request}}
+                  {{ . }}<br>
+                {{/each}}
+              </strong>
+            </p>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<p>Contact details:</p>
+<table class="attributes" width="100%" cellpadding="0" cellspacing="0">
+  <tr>
+    <td class="attributes_content">
+      <table width="100%" cellpadding="0" cellspacing="10">
+        <tr>
+          <td class="attributes_item"><strong>Name:</strong> {{firstname}} {{lastname}}</td>
+        </tr>
+        <tr>
+          <td class="attributes_item"><strong>Profession:</strong> {{profession}}</td>
+        </tr>
+        <tr>
+          <td class="attributes_item"><strong>Company Name:</strong> {{company}}</td>
+        </tr>
+        <tr>
+          <td class="attributes_item"><strong>Address:</strong> {{address_street}}</td>
+        </tr>
+       <tr>
+          <td class="attributes_item"><strong>Zip Code:</strong> {{postcode}}</td>
+        </tr>
+         <tr>
+          <td class="attributes_item"><strong>City:</strong> {{city}}</td>
+        </tr>
+          <tr>
+          <td class="attributes_item"><strong>Country:</strong> {{country}}</td>
+        </tr>
+         <tr>
+          <td class="attributes_item"><strong>Telephone:</strong> {{telephone}}</td>
+        </tr>
+        <tr>
+          <td class="attributes_item"><strong>Email:</strong> {{email}}</td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<p>Message:</p>
+<table class="attributes" width="100%" cellpadding="0" cellspacing="0">
+  <tr>
+    <td class="attributes_content">
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td class="attributes_item"><p>{{message}}</p></td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<p>We appreciate your follow up, {{firstname}} is waiting for your reply.</p>
+<p>Kind Regards,</p>
+<p>Team Substrate Bank</p>
+<p>Not interested in receiving new leads? Let us know and we will disable this service for you.</p>

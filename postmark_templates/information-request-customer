@@ -1,0 +1,78 @@
+Information request Customer
+
+Your information request for {{material_name}} via Substrate Bank
+
+<h1>Dear {{firstname}} {{lastname}},</h1>
+<p>Your information request for <a href="{{material_url}}">{{material_name}}</a> was sent to {{brand_name}}.</p>
+<p>Your request:</p>
+<table class="attributes" width="100%" cellpadding="0" cellspacing="0">
+  <tr>
+    <td class="attributes_content">
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td class="attributes_item">
+            <p>
+              <strong>
+                {{#each request}}
+                  {{ . }}<br>
+                {{/each}}
+              </strong>
+            </p>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<p>Your contact details:</p>
+<table class="attributes" width="100%" cellpadding="0" cellspacing="0">
+  <tr>
+    <td class="attributes_content">
+      <table width="100%" cellpadding="0" cellspacing="10">
+        <tr>
+          <td class="attributes_item"><strong>Name:</strong> {{firstname}} {{lastname}}</td>
+        </tr>
+        <tr>
+          <td class="attributes_item"><strong>Profession:</strong> {{profession}}</td>
+        </tr>
+        <tr>
+          <td class="attributes_item"><strong>Company Name:</strong> {{company}}</td>
+        </tr>
+        <tr>
+          <td class="attributes_item"><strong>Address:</strong> {{address_street}}</td>
+        </tr>
+       <tr>
+          <td class="attributes_item"><strong>Zip Code:</strong> {{postcode}}</td>
+        </tr>
+         <tr>
+          <td class="attributes_item"><strong>City:</strong> {{city}}</td>
+        </tr>
+          <tr>
+          <td class="attributes_item"><strong>Country:</strong> {{country}}</td>
+        </tr>
+         <tr>
+          <td class="attributes_item"><strong>Telephone:</strong> {{telephone}}</td>
+        </tr>
+        <tr>
+          <td class="attributes_item"><strong>Email:</strong> {{email}}</td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<p>Your message:</p>
+<table class="attributes" width="100%" cellpadding="0" cellspacing="0">
+  <tr>
+    <td class="attributes_content">
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td class="attributes_item"><p>{{message}}</p></td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<p>Please be aware that Substrate Bank cannot guarantee that all information requests will be fulfilled. Based on the information you provided, {{brand_name}} will decide how to follow up your request.</p>
+<p>This is an automatically composed message, we are not able to answer further questions regarding this information request.</p>
+<p>Kind Regards,</p>
+<p>Team Substrate Bank</p>
